@@ -1,0 +1,63 @@
+$primary: #696cff
+$primarysecondary: #35365f
+$secondary: #8492a2
+$secondarysecondary: #393c4f
+$info: #02c3eb
+$infosecondary: #25445c
+$success: #70dc38
+$successsecondary: #36473f
+$danger: #ff3e1d
+$dangersecondary: #4d2e3a
+$warning: #ffab00
+$warningsecondary: #4d3f36
+$dark: #2a2b41
+$darksecondary: #232332
+$light: #fefeff
+$lightsecondary:  #f5f5f9
+
+$gray-900: #232332
+
+@mixin responsive($breakpoint)
+    @if $breakpoint == 'xs'
+        @media (max-width: 575px)
+            @content
+    @else if $breakpoint == 'sm'
+        @media (min-width: 576px) and (max-width: 767px)
+            @content
+    @else if $breakpoint == 'md'
+        @media (min-width: 768px) and (max-width: 991px)
+            @content
+    @else if $breakpoint == 'lg'
+        @media (min-width: 992px) and (max-width: 1199px)
+            @content
+    @else if $breakpoint == 'xl'
+        @media (min-width: 1200px) and (max-width: 1399px)
+            @content
+    @else if $breakpoint == 'xxl'
+        @media (min-width: 1400px)
+            @content
+
+@import 'bootstrap'
+@import './custom'
+@import './nav'
+@import './layout'
+
+body
+    background: $dark
+
+footer
+    height: 5vh
+    width: 100%
+    display: flex
+    justify-content: center
+    align-items: center
+    text-align: center
+
+.alerts
+    position: fixed
+    right: 0
+    top: 0
+    z-index: 9999
+    display: block
+    width: max-content
+    height: max-content

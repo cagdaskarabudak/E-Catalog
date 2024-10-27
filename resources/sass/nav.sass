@@ -1,0 +1,86 @@
+nav
+    width: 100vw
+    height: 10vh
+    display: flex
+    justify-content: space-between
+    align-items: center
+    background: $dark
+    padding-left: 10%
+    padding-right: 10%
+    .navbar
+        list-style-type: none
+        display: flex
+        height: 100%
+        min-width: 75%
+        justify-content: start
+        align-items: center
+        flex-direction: row
+        flex-wrap: nowrap
+        column-gap: 5%
+        padding: 0
+        flex: 1
+        .nav-item
+            display: flex
+            justify-content: center
+            align-items: center
+            width: max-content
+            min-width: 100px
+            height: 100%
+            .input-group
+                width: 100%
+                height: auto
+                display: flex
+                justify-content: center
+            a
+                display: flex
+                align-items: center
+                justify-content: center
+                width: 100%
+                height: 100%
+                border-bottom: 3px solid transparent
+                color: $light
+                text-decoration: none
+                transition: 0.3s
+                &[active=true]
+                    color: $lightsecondary
+                    border-bottom: 3px solid $lightsecondary
+            &.brand
+                min-width: 0
+                a
+                    display: flex
+                    align-items: center
+                    justify-content: center
+                    width: max-content
+                    height: 100%
+                    border: none
+                    img
+                        width: auto
+                        height: 80%
+                        border-radius: 5px
+                        filter: drop-shadow(0 0 1px $darksecondary)
+                        transition: 0.3s
+                    &:hover
+                        img
+                            filter: drop-shadow(0 0 5px $darksecondary)
+                    &[active=true]
+                        border: none
+            &.dropdown
+                width: max-content
+                height: 100%
+                .dropdown-menu
+                    padding: 0
+                    .dropdown-item
+                        color: $light
+                        justify-content: start
+                        align-items: center
+                        padding-top: 5%
+                        padding-bottom: 5%
+                        &[active=true]
+                            background: $dark
+                            border: none
+    .user-nav
+        flex: 2
+        min-width: 25%
+        justify-content: end
+        align-items: center
+
