@@ -27,11 +27,11 @@ class ProductController extends Controller
     public function create(ProductCreateRequest $request)
     {
 
-        DB::beginTransaction ();
+        DB::beginTransaction();
 
         try{
 
-            $store = session()->has('active_store') ? session()->get('active_store') : Auth::user()->stores[0];
+            $store = Auth::user()->active_store;
 
             $product = new Product;
             $product->store_id = $store->id;
@@ -68,14 +68,11 @@ class ProductController extends Controller
                 }
             }
 
-            $active_store_reload = StoreController::active_store_reload();
-
             DB::commit();
 
             return Inertia::render('Store/Products', [
                 'request' => [
                     'status' => true,
-                    'product' => $product,
                 ],
             ]);
 
@@ -95,8 +92,52 @@ class ProductController extends Controller
             ]);
         }
 
-        
+    }
 
+    public function destroy(Request $request){
+        $request->validate([
+            'product_id' => ['required'],
+        ]);
+
+        DB::beginTransaction();
+
+        try{
+            $user = Auth::user();
+
+            $product = Product::where('id', '=', $request->product_id)->with('store')->first();
+    
+            if($product){
+                $store = $product->store;
+
+                if($user->active_store->id == $store->id){
+                    $product->delete();
+                }
+                else{
+                    throw new \Exception('This Store is have not this product');
+                }
+            }
+            else{
+                throw new \Exception('Product not found!');
+            }
+
+            DB::commit();
+
+            return Inertia::render('Store/Products', [
+                'request' => [
+                    'status' => true,
+                ],
+            ]);
+        }catch(\Exception $e){
+            return Inertia::render('Store/Products', [
+                'request' => [
+                    'status' => false,
+                    'error_message' => $e->getMessage(),
+                    'error_line' => $e->getLine(),
+                    'error_file' => $e->getFile(),
+                    'trace' => $e->getTraceAsString(),
+                ],
+            ]);
+        }
 
     }
 }

@@ -43,7 +43,7 @@ const deleteUser = () => {
         </p>
 
         <!-- Buton ile modalı açma -->
-        <button type="button" class="btn btn-danger" @click="deletingModalClass.show()">Delete Account</button>
+        <button type="button" class="btn btn-danger" @click="deletingModalClass.show()">Hesabı Sil</button>
 
         <div class="modal fade" id="confirmingUserDeletion" ref="deletingModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

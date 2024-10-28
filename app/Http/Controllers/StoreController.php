@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -19,56 +20,39 @@ class StoreController extends Controller
 {
     public function active_store_change(Request $request){
 
-        $authstores = Auth::user()->stores;
-        foreach($authstores as $store){
-            if($store->id == $request->active_store){
-                $active_store = $store;
-            }
-        }
-        session()->put('active_store', $active_store);
+        $request->validate([
+            'new_active_store_id' => ['required', 'integer'],
+        ]);
 
-        return Redirect::back();
-    }
-
-    public static function active_store_reload(){
+        DB::beginTransaction();
 
         try{
-
-            $authstores = Auth::user()->stores;
-            $active_store = session()->has('active_store') ? session()->get('active_store') : $authstores[0];
-    
-            foreach($authstores as $store){
-                if($store->id == $active_store->id){
-                    $active_store = $store;
-                }
+            $user = User::where('id', '=', Auth::user()->id)->with('store_links')->first();
+            foreach($user->store_links as $auth_store_link){
+                $store_link = UserStore::where('id', '=', $auth_store_link->id)->first();
+                $store_link->is_active = 0;
+                $store_link->save();
             }
-            session()->put('active_store', $active_store);
-    
-            return true;
+
+            $store = Store::where('id', '=', $request->new_active_store_id)->first();
+            $store_link = UserStore::where('store_id', '=', $store->id)->where('user_id', '=', $user->id)->first();
+            if($store_link){
+                $store_link->is_active = 1;
+                $store_link->save();
+            }
+            else{
+                throw new \Exception('Store_Link is not found!');
+            }
+
+            DB::commit();
+
         }catch(\Exception $e){
-            return false;
-        }
-    }
-
-    public function getStores(Request $request){
-        try{
-            $data = User::all();
-
             return response()->json([
-                'data' => $data,
-                'status' => true
+                'status' => false,
+                'error_message' => $e->getMessage(),
+                'error_line' => $e->getLine(),
+                'error_file' => $e->getFile(),
             ]);
         }
-        catch(\Exception $e){
-            return response()->json([
-                'data' => $e->getMessage(),
-                'status' => false
-            ]);
-        }
-
-    }
-
-    public function example(){
-        return Product::with('categories')->get();
     }
 }

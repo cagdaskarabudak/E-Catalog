@@ -1,19 +1,19 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CreateProduct from '@/Pages/Store/CreateProduct.vue';
-import { Head, Link, usePage, router } from '@inertiajs/vue3';
+import { Head, Link, usePage, router, useForm } from '@inertiajs/vue3';
 import { watch, ref, onMounted, inject } from 'vue';
 import { Modal } from 'bootstrap';
 
-const page = usePage();
-const user = page.props.auth.user;
 const bsAlert = inject('bsAlert');
+const page = usePage();
+let user = page.props.auth.user;
+let active_store = page.props.auth.user.active_store;
 
-let active_store = page.props.auth.active_store != null ? page.props.auth.active_store : user.stores[0];
-
-watch(page, () => {
-    active_store = page.props.auth.active_store;
+watch(page, ()=>{
+    active_store = page.props.auth.user.active_store;
 });
+
 const productCreateModal = ref(null);
 
 let productCreateModalClass = null;
@@ -25,10 +25,33 @@ onMounted(() => {
 const productCreateResponseHandle = (data) => {
   if(data.request.status == true){
     productCreateModalClass.hide();
-    router.reload();
     bsAlert('success', 'Ürün başarıyla oluşturulmuştur.');
+    router.reload();
   }
-  
+};
+
+const deleteProduct = (productid) => {
+    const confirmDeleteProduct = confirm('Ürünü silmek istediğinize emin misiniz?');
+    if(confirmDeleteProduct){
+        let deleteProductForm = useForm({
+            product_id: productid,
+        });
+
+        deleteProductForm.delete(route('product.destroy'), {
+            preserveScroll: true,
+            onSuccess: (response) => {
+                if(response.props.request.status == true){
+                    router.reload();
+                    bsAlert('success', 'Ürün silindi.');
+                }
+                else{
+                    bsAlert('danger', `Ürün silinemedi. error_message: ${response.props.request.error_message}, error_line: ${response.props.request.error_line}, error_file: ${response.props.request.error_file}`);
+                }
+                
+            },
+            onFinish: () => deleteProductForm.reset(),
+        });
+    }
 };
 
 </script>
@@ -50,7 +73,7 @@ const productCreateResponseHandle = (data) => {
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <CreateProduct @form-response="productCreateResponseHandle"></CreateProduct>
+                                        <CreateProduct @form-response="productCreateResponseHandle" :active_store="active_store"></CreateProduct>
                                     </div>
                                 </div>
                             </div>
@@ -60,7 +83,7 @@ const productCreateResponseHandle = (data) => {
                         <table v-if="active_store.products.length > 0" class="table table-responsive table-hover table-dark align-middle table-striped">
                             <thead>
                                 <tr class="text-center">
-                                    <th>#</th>
+                                    <th>ID</th>
                                     <th>Görüntü</th>
                                     <th>İsim</th>
                                     <th>Perakende Fiyat</th>
@@ -71,9 +94,9 @@ const productCreateResponseHandle = (data) => {
                             </thead>
                             <tbody>
                                 <tr v-for="product in active_store.products" class="text-center">
-                                    <td>{{ product.id }}</td>
+                                    <td>#{{ product.id }}</td>
                                     <td>
-                                        <img v-if="product.images.length > 0" :src="`/storage/product_images/${product.images[0].name}`" width="100px" class="rounded" alt="">
+                                        <img class="product-image rounded" v-if="product.images.length > 0" :src="`/storage/product_images/${product.images[0].name}`" width="100px" alt="">
                                         <img v-else src="/storage/alpagu.webp" width="100px" class="rounded" alt="">
                                     </td>
                                     <td>{{ product.name }}</td>
@@ -94,13 +117,13 @@ const productCreateResponseHandle = (data) => {
                                         <button class="btn btn-label-info" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                                         <div class="dropdown-menu">
                                             <Link href="#" class="dropdown-item text-info"><i class="fa-solid fa-edit"></i> Düzenle</Link>
-                                            <Link href="#" class="dropdown-item text-danger"><i class="fa-solid fa-trash"></i> Sil</Link>
+                                            <div class="dropdown-item text-danger" @click="deleteProduct(product.id)"><i class="fa-solid fa-trash"></i> Sil</div>
                                         </div>
                                     </div></td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div v-else class="alert alert-danger" role="alert">
+                        <div v-else class="alert alert-danger text-center" role="alert">
                             <i class="fa-solid fa-warning me-2"></i>
                             Ürün Bulunamadı!
                         </div>

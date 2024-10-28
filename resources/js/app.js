@@ -32,9 +32,8 @@ const bsAlert = (color, message, time = 3000) => {
     let alertsdiv = document.querySelector('.alerts');
     alertsdiv.append(alert);
 
-    let bsAlert = new Alert(alert);
-
     setTimeout(()=>{
+        let bsAlert = new Alert(alert);
         bsAlert.close();
     }, time);
 

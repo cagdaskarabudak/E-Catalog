@@ -41,9 +41,32 @@ $gray-900: #232332
 @import './custom'
 @import './nav'
 @import './layout'
+@import './product'
 
 body
     background: $dark
+
+.alpagu-loader
+    position: fixed
+    display: flex
+    justify-content: center
+    align-items: center
+    flex-direction: column
+    width: 100vw
+    height: 100vh
+    z-index: 99999
+    background: $dark
+    .loader
+        position: absolute
+        width: 10rem
+        height: 10rem
+        color: $dark
+    img
+        width: 9.8rem
+        height: 9.8rem
+        object-fit: cover
+        border-radius: 50%
+        border: 0.2rem solid $black
 
 footer
     height: 5vh

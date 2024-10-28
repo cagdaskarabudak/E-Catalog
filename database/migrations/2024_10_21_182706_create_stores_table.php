@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('short_name');
             $table->string('logo')->nullable();
+            $table->longText('address')->nullable();
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }

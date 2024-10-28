@@ -11,11 +11,14 @@ class Store extends Model
     protected $fillable = [
         'name',
         'short_name',
-        'logo'
+        'logo',
+        'address',
+        'phone',
     ];
     protected $with = [
         'products',
         'categories',
+        'catalogs',
     ];
 
     public function products(){
@@ -24,6 +27,10 @@ class Store extends Model
 
     public function categories(){
         return $this->hasMany(Category::class, 'store_id', 'id')->with('products');
+    }
+
+    public function catalogs(){
+        return $this->hasMany(Catalog::class, 'store_id', 'id');
     }
 
     public function users(){

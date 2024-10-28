@@ -10,5 +10,7 @@ class Role extends Model
     public $timestamps = true;
     protected $fillable = [
         'name',
+        'tr_name',
+        'color',
     ];
 }

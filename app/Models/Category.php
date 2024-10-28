@@ -16,4 +16,8 @@ class Category extends Model
     public function products(){
         return $this->hasManyThrough(Product::class, CategoryProduct::class, 'category_id', 'id', 'id', 'product_id');
     }
+
+    public function store(){
+        return $this->belongsTo(Store::class, 'store_id', 'id');
+    }
 }

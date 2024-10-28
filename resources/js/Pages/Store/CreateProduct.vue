@@ -1,18 +1,16 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
-import { ref, watch, defineEmits, inject } from 'vue';
+import { useForm, usePage, router } from '@inertiajs/vue3';
+import { ref, watch, defineEmits, inject, defineProps } from 'vue';
 
-const page = usePage();
-const user = page.props.auth.user;
 const bsAlert = inject('bsAlert');
 
-let active_store = page.props.auth.active_store != null ? page.props.auth.active_store : user.stores[0];
+const props = defineProps({
+  active_store: {
+    required: true,
+  },
+});
 
 const emit = defineEmits(['form-response']);
-
-watch(page, () => {
-    active_store = page.props.auth.active_store;
-});
 
 const wholesaleinputs = ref(null);
 const imagesinput = ref(null);
@@ -89,11 +87,11 @@ const submitform = () => {
     form.post(route('product.create'), {
         onSuccess: (successresponse) => {
             if(successresponse.props.request.status == true){
-                emit('form-response', successresponse.props);
                 form.reset();
                 wholesaleinputs.value.innerHTML = '';
                 imagesinput.value.value = '';
                 images.value = [];
+                emit('form-response', successresponse.props);
             }
             else{
                 bsAlert('danger', successresponse.props.request.error_message + '(' + successresponse.props.request.error_line + ')');

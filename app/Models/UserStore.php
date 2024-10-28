@@ -13,6 +13,7 @@ class UserStore extends Model
         'user_id',
         'store_id',
         'role_id',
+        'is_active',
     ];
 
     public function user(){
